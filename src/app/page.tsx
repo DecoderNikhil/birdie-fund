@@ -1,7 +1,18 @@
-export default function Home() {
+import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
+import { HeroSection, HowItWorks, CharitySpotlight, PrizeTiers, DrawCountdown, FinalCTA } from '@/components/home/HeroSection'
+
+export default function HomePage() {
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-display font-bold text-primary">Birdie Fund</h1>
-    </main>
+    <div className="min-h-screen">
+      <Navbar />
+      <HeroSection />
+      <HowItWorks />
+      <CharitySpotlight />
+      <PrizeTiers />
+      <DrawCountdown />
+      <FinalCTA />
+      <Footer />
+    </div>
   )
 }
