@@ -2,36 +2,38 @@ import Link from 'next/link'
 
 export function Footer() {
   return (
-    <footer className="bg-muted py-12 border-t border-white/10">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div>
-            <h3 className="text-xl font-display font-bold text-primary">Birdie Fund</h3>
-            <p className="text-gray-400 mt-2">
-              Play golf. Change lives. Win big.
+    <footer className="border-t border-white/10 bg-black/20 py-16">
+      <div className="section-shell">
+        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+          <div className="max-w-md">
+            <div className="font-display text-2xl font-bold text-primary">Birdie Fund</div>
+            <p className="mt-4 text-sm leading-7 text-[#a8a4b1]">
+              A modern member experience that combines score tracking, monthly rewards, and meaningful charitable impact
+              without falling into golf cliches.
             </p>
           </div>
 
           <div>
-            <h4 className="font-medium mb-4">Quick Links</h4>
-            <div className="space-y-2">
-              <Link href="/charities" className="block text-gray-400 hover:text-white">Charities</Link>
-              <Link href="/how-it-works" className="block text-gray-400 hover:text-white">How It Works</Link>
-              <Link href="/subscribe" className="block text-gray-400 hover:text-white">Subscribe</Link>
+            <div className="text-xs uppercase tracking-[0.22em] text-[#8d8897]">Explore</div>
+            <div className="mt-5 space-y-3">
+              <Link href="/charities" className="block text-sm text-[#cbc7d4] hover:text-white">Charities</Link>
+              <Link href="/how-it-works" className="block text-sm text-[#cbc7d4] hover:text-white">How It Works</Link>
+              <Link href="/subscribe" className="block text-sm text-[#cbc7d4] hover:text-white">Membership</Link>
             </div>
           </div>
 
           <div>
-            <h4 className="font-medium mb-4">Legal</h4>
-            <div className="space-y-2">
-              <Link href="/privacy" className="block text-gray-400 hover:text-white">Privacy Policy</Link>
-              <Link href="/terms" className="block text-gray-400 hover:text-white">Terms of Service</Link>
+            <div className="text-xs uppercase tracking-[0.22em] text-[#8d8897]">Product promises</div>
+            <div className="mt-5 space-y-3 text-sm text-[#cbc7d4]">
+              <p>Responsive across desktop and mobile</p>
+              <p>Charity-first storytelling</p>
+              <p>Clear subscription and reward flow</p>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-white/10 text-center text-gray-400 text-sm">
-          © {new Date().getFullYear()} Birdie Fund. All rights reserved.
+        <div className="mt-12 border-t border-white/10 pt-6 text-sm text-[#8d8897]">
+          © {new Date().getFullYear()} Birdie Fund. Designed to feel generous, clear, and modern.
         </div>
       </div>
     </footer>

@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
+        background: '#0A0A0F',
+        foreground: '#F0EEE9',
         primary: {
           DEFAULT: '#00C896',
           foreground: '#0A0A0F',
@@ -27,8 +27,8 @@ const config: Config = {
         'accent-secondary': '#F5A623',
       },
       fontFamily: {
-        display: ['Syne', 'sans-serif'],
-        body: ['DM Sans', 'sans-serif'],
+        display: ['var(--font-display)', 'Syne', 'sans-serif'],
+        body: ['var(--font-body)', 'DM Sans', 'sans-serif'],
       },
       animation: {
         'fade-up': 'fadeUp 0.5s ease-out',

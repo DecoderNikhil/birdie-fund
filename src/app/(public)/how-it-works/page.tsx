@@ -5,47 +5,51 @@ import { Card, CardContent } from '@/components/ui'
 export default function HowItWorksPage() {
   const steps = [
     {
-      title: 'Subscribe',
-      description: 'Choose a monthly (£9.99) or yearly (£89.99) plan. Your subscription enters you into the monthly draw.',
+      title: 'Choose your membership',
+      description: 'Subscribe monthly or yearly, then move straight into a member experience that stays focused and uncluttered.',
     },
     {
-      title: 'Enter Scores',
-      description: 'Log up to 5 golf scores per month using the Stableford scoring system (1-45 points). Your latest 5 scores count.',
+      title: 'Set your charity preference',
+      description: 'Choose the cause you care about and define the contribution baseline that turns every month into visible impact.',
     },
     {
-      title: 'Monthly Draw',
-      description: 'At the end of each month, 5 random numbers are drawn. Match 3+ numbers to win a prize!',
+      title: 'Log your latest five scores',
+      description: 'The score flow stays lightweight, mobile-friendly, and structured around the PRD rule set.',
     },
     {
-      title: 'Win Prizes',
-      description: 'Jackpot (5-match) wins 40% of the pool, 4-match wins 35%, and 3-match wins 25%. Unclaimed jackpots roll over!',
+      title: 'Follow the monthly draw',
+      description: 'Track simulation, published outcomes, prize tiers, and eligibility without having to decode the mechanics yourself.',
     },
     {
-      title: 'Support Charity',
-      description: 'Choose a charity to support. Decide what percentage of your winnings go to your chosen cause.',
+      title: 'Claim winnings when eligible',
+      description: 'If you win, the verification and payout states should feel transparent rather than intimidating.',
     },
   ]
 
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="pt-24 pb-12">
-        <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-4xl font-display font-bold text-center">How It Works</h1>
-          <p className="text-gray-400 text-center mt-2">Get started in 5 simple steps</p>
+      <main className="gradient-mesh pt-28 pb-20">
+        <div className="section-shell">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="eyebrow">Product flow</span>
+            <h1 className="headline-balance mt-5 text-5xl font-bold sm:text-6xl">Five clear steps, one generous experience.</h1>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-[#b8b3c1]">
+              This page now explains the platform in the order the PRD expects: what users do, how rewards work, and
+              where the charitable value appears.
+            </p>
+          </div>
 
-          <div className="mt-12 space-y-6">
-            {steps.map((step, i) => (
-              <Card key={i}>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full bg-primary text-background font-bold">
-                      {i + 1}
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-display font-bold">{step.title}</h2>
-                      <p className="text-gray-400 mt-1">{step.description}</p>
-                    </div>
+          <div className="mt-14 space-y-5">
+            {steps.map((step, index) => (
+              <Card key={step.title} glass className="overflow-hidden">
+                <CardContent className="grid gap-6 p-6 md:grid-cols-[80px_1fr] md:p-8">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-primary text-lg font-display font-bold text-background">
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-display font-bold">{step.title}</h2>
+                    <p className="mt-3 max-w-3xl text-base leading-7 text-[#bbb5c3]">{step.description}</p>
                   </div>
                 </CardContent>
               </Card>

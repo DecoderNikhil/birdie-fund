@@ -9,8 +9,8 @@ export function Card({ className, glass, children, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        'rounded-xl p-6',
-        glass ? 'glass' : 'bg-muted',
+        'rounded-[1.5rem] border border-white/10 p-6 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.55)] transition-colors',
+        glass ? 'glass' : 'bg-white/[0.04]',
         className
       )}
       {...props}
@@ -22,7 +22,7 @@ export function Card({ className, glass, children, ...props }: CardProps) {
 
 export function CardHeader({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn('mb-4', className)} {...props}>
+    <div className={cn('mb-5 space-y-1', className)} {...props}>
       {children}
     </div>
   )
@@ -38,7 +38,7 @@ export function CardTitle({ className, children, ...props }: React.HTMLAttribute
 
 export function CardDescription({ className, children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn('text-sm text-gray-400', className)} {...props}>
+    <p className={cn('text-sm leading-6 text-[#a3a1b2]', className)} {...props}>
       {children}
     </p>
   )

@@ -1,6 +1,6 @@
 import { sql } from '@/lib/db/client'
 import { CharityCard } from '@/components/charity/CharityCard'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { Card, CardContent } from '@/components/ui'
 
 export default async function CharitiesPage() {
   const result = await sql`
@@ -13,36 +13,42 @@ export default async function CharitiesPage() {
   const others = result.filter((c: any) => !c.is_featured)
 
   return (
-    <div className="min-h-screen gradient-mesh p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-4xl font-display font-bold">Charities</h1>
-          <p className="text-gray-400 mt-2">Support a cause that matters to you</p>
+    <main className="gradient-mesh pt-28 pb-20">
+      <div className="section-shell space-y-12">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <div>
+            <span className="eyebrow">Charity directory</span>
+            <h1 className="headline-balance mt-5 text-5xl font-bold sm:text-6xl">Support a cause that feels personal, not abstract.</h1>
+          </div>
+          <p className="max-w-2xl text-lg leading-8 text-[#b8b3c1]">
+            The PRD calls for charity search, spotlighting, and selection to feel seamless. This page now leads with
+            trust, clarity, and emotional relevance instead of reading like a list of records.
+          </p>
         </div>
 
         {featured && (
-          <Card className="border-primary/30">
-            <CardContent className="p-8">
-              <div className="flex items-center gap-6">
-                {featured.logo_url && (
-                  <img src={featured.logo_url} alt={featured.name} className="w-24 h-24 rounded-xl object-cover" />
-                )}
-                <div className="flex-1">
-                  <span className="text-sm text-primary font-medium">Featured Charity</span>
-                  <h2 className="text-2xl font-display font-bold mt-1">{featured.name}</h2>
-                  <p className="text-gray-300 mt-2">{featured.description}</p>
-                </div>
+          <Card className="glass-strong overflow-hidden">
+            <CardContent className="grid gap-8 p-8 md:grid-cols-[160px_1fr] md:p-10">
+              {featured.logo_url ? (
+                <img src={featured.logo_url} alt={featured.name} className="h-32 w-32 rounded-[1.75rem] object-cover" />
+              ) : (
+                <div className="h-32 w-32 rounded-[1.75rem] bg-white/10" />
+              )}
+              <div>
+                <span className="eyebrow border-primary/20 bg-primary/10">Featured charity</span>
+                <h2 className="mt-5 text-4xl font-display font-bold">{featured.name}</h2>
+                <p className="mt-4 max-w-3xl text-base leading-8 text-[#c1bcc9]">{featured.description}</p>
               </div>
             </CardContent>
           </Card>
         )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {others.map((charity: any) => (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {(featured ? others : result).map((charity: any) => (
             <CharityCard key={charity.id} charity={charity} />
           ))}
         </div>
       </div>
-    </div>
+    </main>
   )
 }

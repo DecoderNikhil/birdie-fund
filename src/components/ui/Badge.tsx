@@ -11,16 +11,16 @@ export function Badge({
   children: React.ReactNode 
 } & React.HTMLAttributes<HTMLSpanElement>) {
   const variants = {
-    default: 'bg-white/10 text-gray-300',
-    success: 'bg-primary/20 text-primary',
-    warning: 'bg-secondary/20 text-secondary',
-    error: 'bg-red-500/20 text-red-500',
+    default: 'border border-white/10 bg-white/[0.06] text-[#d3cfdb]',
+    success: 'border border-primary/15 bg-primary/15 text-primary',
+    warning: 'border border-secondary/20 bg-secondary/15 text-secondary',
+    error: 'border border-red-500/20 bg-red-500/15 text-red-300',
   }
 
   return (
     <span 
       className={cn(
-        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+        'inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em]',
         variants[variant],
         className
       )}
