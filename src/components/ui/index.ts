@@ -1,4 +1,4 @@
-export { cn } from 'clsx'
+export { cn } from './utils'
 export { Button } from './Button'
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './Card'
 export { Input, Label } from './Input'

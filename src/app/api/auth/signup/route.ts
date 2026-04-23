@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       role: user.role,
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       token,
       user: {
         id: user.id,
@@ -35,6 +35,16 @@ export async function POST(req: NextRequest) {
         role: user.role,
       },
     })
+
+    response.cookies.set('auth-token', token, {
+      httpOnly: false,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    })
+
+    return response
   } catch (error: any) {
     if (error.code === '23505') {
       return NextResponse.json(

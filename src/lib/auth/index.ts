@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import { sql } from './db/client'
+import { sql } from '@/lib/db'
 
 const JWT_SECRET = process.env.JWT_SECRET
 if (!JWT_SECRET) {
   throw new Error('JWT_SECRET is not defined in environment variables')
 }
+const jwtSecret = JWT_SECRET as string
 
 export interface JWTPayload {
   userId: string
@@ -22,11 +23,11 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
+  return jwt.sign(payload, jwtSecret, { expiresIn: '7d' })
 }
 
 export function verifyToken(token: string): JWTPayload {
-  return jwt.verify(token, JWT_SECRET) as JWTPayload
+  return jwt.verify(token, jwtSecret) as JWTPayload
 }
 
 export interface User {
@@ -44,7 +45,7 @@ export async function createUser(email: string, password: string, fullName?: str
   const result = await sql`
     INSERT INTO users (email, password_hash, full_name)
     VALUES (${email}, ${passwordHash}, ${fullName})
-    RETURNING id, email, password_hash, full_name, role, created_at
+    RETURNING id, email, password_hash, full_name, created_at
   `
   
   const user = result[0] as any

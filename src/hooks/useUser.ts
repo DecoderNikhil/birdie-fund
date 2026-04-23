@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { sql } from '@/lib/db/client'
 import type { Profile } from '@/types'
 
 interface UserData {
@@ -22,6 +21,7 @@ export function useUser(): UserData {
     if (userData) {
       setUser(JSON.parse(userData))
     }
+
     setLoading(false)
   }, [])
 

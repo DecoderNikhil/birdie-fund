@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { sql } from '@/lib/db/client'
 import type { Subscription } from '@/types'
 
 interface UseSubscriptionData {
@@ -14,24 +13,12 @@ export function useSubscription(userId?: string): UseSubscriptionData {
 
   useEffect(() => {
     if (!userId) {
+      setSubscription(null)
       setLoading(false)
       return
     }
 
-    const fetchSubscription = async () => {
-      try {
-        const result = await sql`
-          SELECT * FROM subscriptions WHERE user_id = ${userId}
-        `
-        setSubscription(result[0] || null)
-      } catch (error) {
-        console.error('Error fetching subscription:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchSubscription()
+    setLoading(false)
   }, [userId])
 
   return {

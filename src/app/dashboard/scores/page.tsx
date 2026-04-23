@@ -1,28 +1,53 @@
-import { sql } from '@/lib/db/client'
-import { verifyToken } from '@/lib/auth'
+'use client'
+
+import { useCallback, useEffect, useState } from 'react'
 import { ScoreEntryForm } from '@/components/scores/ScoreEntryForm'
 import { ScoreHistory } from '@/components/scores/ScoreHistory'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 
-async function getScores(token: string) {
-  try {
-    const decoded = verifyToken(token)
-    const result = await sql`
-      SELECT id, score, score_date, created_at
-      FROM scores
-      WHERE user_id = ${decoded.userId}
-      ORDER BY score_date DESC
-      LIMIT 5
-    `
-    return result
-  } catch {
-    return []
-  }
+interface Score {
+  id: string
+  score: number
+  score_date: string
+  created_at: string
 }
 
-export default async function ScoresPage() {
-  const token = ''
-  const scores = await getScores(token)
+export default function ScoresPage() {
+  const [scores, setScores] = useState<Score[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchScores = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('auth-token')
+
+      if (!token) {
+        setScores([])
+        return
+      }
+
+      const res = await fetch('/api/scores', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setScores(data)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchScores()
+  }, [fetchScores])
+
+  if (loading) {
+    return <div className="p-8">Loading...</div>
+  }
 
   return (
     <div className="space-y-6">
@@ -31,13 +56,13 @@ export default async function ScoresPage() {
         <p className="text-gray-400 mt-2">Track your golf scores for the monthly draw</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Enter Score</CardTitle>
           </CardHeader>
           <CardContent>
-            <ScoreEntryForm onSuccess={async () => {}} />
+            <ScoreEntryForm onSuccess={fetchScores} />
           </CardContent>
         </Card>
 
@@ -46,10 +71,7 @@ export default async function ScoresPage() {
             <CardTitle>Score History</CardTitle>
           </CardHeader>
           <CardContent>
-            <ScoreHistory 
-              scores={scores as any} 
-              onRefetch={async () => {}} 
-            />
+            <ScoreHistory scores={scores} onRefetch={fetchScores} />
           </CardContent>
         </Card>
       </div>

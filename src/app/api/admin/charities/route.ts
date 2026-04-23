@@ -6,22 +6,19 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
     const activeOnly = searchParams.get('active') !== 'false'
-    
-    let query = sql`
-      SELECT * FROM charities
-    `
-    
-    if (activeOnly) {
-      query = sql`
-        SELECT * FROM charities WHERE is_active = true ORDER BY is_featured DESC, name ASC
-      `
-    }
 
-    const result = await sql`
-      SELECT * FROM charities
-      WHERE ${activeOnly ? sql`is_active = true` : sql`1=1`}
-      ORDER BY is_featured DESC, name ASC
-    `
+    const result = activeOnly
+      ? await sql`
+          SELECT *
+          FROM charities
+          WHERE is_active = true
+          ORDER BY is_featured DESC, name ASC
+        `
+      : await sql`
+          SELECT *
+          FROM charities
+          ORDER BY is_featured DESC, name ASC
+        `
 
     return NextResponse.json(result)
   } catch (error: any) {

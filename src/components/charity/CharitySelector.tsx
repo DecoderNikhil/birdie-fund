@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Button, Input } from '@/components/ui'
+import { Input } from '@/components/ui'
 import { CharityCard } from './CharityCard'
 
 interface Charity {
@@ -10,6 +10,7 @@ interface Charity {
   slug: string
   description: string | null
   logo_url: string | null
+  is_featured: boolean
 }
 
 interface CharitySelectorProps {
@@ -20,12 +21,34 @@ export function CharitySelector({ onSelect }: CharitySelectorProps) {
   const [charities, setCharities] = useState<Charity[]>([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch('/api/charities')
-      .then(res => res.json())
-      .then(data => setCharities(data))
-      .finally(() => setLoading(false))
+    const loadCharities = async () => {
+      try {
+        setError('')
+
+        const res = await fetch('/api/charities')
+        const data = await res.json()
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to load charities')
+        }
+
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid charities response')
+        }
+
+        setCharities(data)
+      } catch (err: any) {
+        setCharities([])
+        setError(err.message || 'Failed to load charities')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadCharities()
   }, [])
 
   const filtered = charities.filter(c => 
@@ -39,6 +62,11 @@ export function CharitySelector({ onSelect }: CharitySelectorProps) {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+      {error && (
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-500">
+          {error}
+        </div>
+      )}
       <div className="grid md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
         {loading ? (
           <p className="text-gray-400">Loading...</p>

@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react'
-import { sql } from '@/lib/db/client'
 import type { Score } from '@/types'
 
 interface UseScoresData {
@@ -17,19 +16,26 @@ export function useScores(userId?: string): UseScoresData {
 
   const fetchScores = useCallback(async () => {
     if (!userId) {
+      setScores([])
       setLoading(false)
       return
     }
 
     try {
-      const result = await sql`
-        SELECT id, score, score_date, created_at
-        FROM scores
-        WHERE user_id = ${userId}
-        ORDER BY score_date DESC
-        LIMIT 5
-      `
-      setScores(result as any)
+      const token = localStorage.getItem('auth-token')
+      const res = await fetch('/api/scores', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to fetch scores')
+      }
+
+      setScores(data)
     } catch (error) {
       console.error('Error fetching scores:', error)
     } finally {
@@ -43,36 +49,56 @@ export function useScores(userId?: string): UseScoresData {
 
   const addScore = async (score: number, scoreDate: string) => {
     const token = localStorage.getItem('auth-token')
-    await fetch('/api/scores', {
+    const res = await fetch('/api/scores', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ score, scoreDate }),
     })
+
+    if (!res.ok) {
+      const data = await res.json()
+      throw new Error(data.error || 'Failed to add score')
+    }
+
     await fetchScores()
   }
 
   const updateScore = async (scoreId: string, score: number, scoreDate: string) => {
     const token = localStorage.getItem('auth-token')
-    await fetch('/api/scores', {
+    const res = await fetch('/api/scores', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ scoreId, score, scoreDate }),
     })
+
+    if (!res.ok) {
+      const data = await res.json()
+      throw new Error(data.error || 'Failed to update score')
+    }
+
     await fetchScores()
   }
 
   const deleteScore = async (scoreId: string) => {
     const token = localStorage.getItem('auth-token')
-    await fetch(`/api/scores?id=${scoreId}`, {
+    const res = await fetch(`/api/scores?id=${scoreId}`, {
       method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
+
+    if (!res.ok) {
+      const data = await res.json()
+      throw new Error(data.error || 'Failed to delete score')
+    }
+
     await fetchScores()
   }
 
