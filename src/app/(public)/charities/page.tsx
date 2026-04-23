@@ -2,6 +2,8 @@ import { sql } from '@/lib/db/client'
 import { CharityCard } from '@/components/charity/CharityCard'
 import { Card, CardContent } from '@/components/ui'
 
+export const dynamic = 'force-dynamic'
+
 export default async function CharitiesPage() {
   const result = await sql`
     SELECT * FROM charities
@@ -9,8 +11,8 @@ export default async function CharitiesPage() {
     ORDER BY is_featured DESC, name ASC
   `
 
-  const featured = result.find((c: any) => c.is_featured)
-  const others = result.filter((c: any) => !c.is_featured)
+  const featured = result.rows.find((c: any) => c.is_featured)
+  const others = result.rows.filter((c: any) => !c.is_featured)
 
   return (
     <main className="gradient-mesh pt-28 pb-20">
@@ -44,7 +46,7 @@ export default async function CharitiesPage() {
         )}
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {(featured ? others : result).map((charity: any) => (
+          {(featured ? others : result.rows).map((charity: any) => (
             <CharityCard key={charity.id} charity={charity} />
           ))}
         </div>

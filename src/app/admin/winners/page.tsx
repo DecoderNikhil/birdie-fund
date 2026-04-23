@@ -1,6 +1,8 @@
 import { sql } from '@/lib/db/client'
 import { Button, Badge } from '@/components/ui'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminWinnersPage() {
   const winners = await sql`
     SELECT w.*, p.email, p.full_name, d.month, d.year
@@ -9,24 +11,7 @@ export default async function AdminWinnersPage() {
     JOIN draws d ON w.draw_id = d.id
     ORDER BY w.created_at DESC
   `
-
-  const handleVerify = async (winnerId: string, status: 'approved' | 'rejected') => {
-    'use server'
-    await sql`
-      UPDATE winners
-      SET verification_status = ${status}, updated_at = NOW()
-      WHERE id = ${winnerId}
-    `
-  }
-
-  const handlePay = async (winnerId: string) => {
-    'use server'
-    await sql`
-      UPDATE winners
-      SET payment_status = 'paid', paid_at = NOW(), updated_at = NOW()
-      WHERE id = ${winnerId}
-    `
-  }
+  const winnersList = winners.rows
 
   return (
     <div className="space-y-6">
@@ -48,7 +33,7 @@ export default async function AdminWinnersPage() {
             </tr>
           </thead>
           <tbody>
-            {winners.map((win: any) => (
+            {winnersList.map((win: any) => (
               <tr key={win.id} className="border-b border-white/5">
                 <td className="py-3 px-4">
                   <p className="font-medium">{win.full_name || '-'}</p>
@@ -72,13 +57,20 @@ export default async function AdminWinnersPage() {
                 <td className="py-3 px-4">
                   <div className="flex gap-2">
                     {win.verification_status === 'submitted' && (
-                      <>
-                        <Button size="sm" onClick={() => handleVerify(win.id, 'approved')}>Approve</Button>
-                        <Button size="sm" variant="ghost" onClick={() => handleVerify(win.id, 'rejected')}>Reject</Button>
-                      </>
+                      <form action={async () => {
+                        'use server'
+                        await sql`UPDATE winners SET verification_status = 'approved', updated_at = NOW() WHERE id = ${win.id}`
+                      }}>
+                        <Button size="sm" type="submit">Approve</Button>
+                      </form>
                     )}
                     {win.verification_status === 'approved' && win.payment_status === 'pending' && (
-                      <Button size="sm" onClick={() => handlePay(win.id)}>Pay</Button>
+                      <form action={async () => {
+                        'use server'
+                        await sql`UPDATE winners SET payment_status = 'paid', paid_at = NOW(), updated_at = NOW() WHERE id = ${win.id}`
+                      }}>
+                        <Button size="sm" type="submit">Pay</Button>
+                      </form>
                     )}
                   </div>
                 </td>

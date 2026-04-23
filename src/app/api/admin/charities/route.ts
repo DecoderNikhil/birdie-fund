@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       RETURNING *
     `
 
-    return NextResponse.json(result[0])
+    return NextResponse.json(result.rows[0])
   } catch (error: any) {
     if (error.code === '23505') {
       return NextResponse.json({ error: 'Charity with this slug already exists' }, { status: 409 })

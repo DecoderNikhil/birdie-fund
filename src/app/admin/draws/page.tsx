@@ -2,16 +2,19 @@ import { sql } from '@/lib/db/client'
 import { DrawSimulator } from '@/components/draws/DrawSimulator'
 import { Card, CardHeader, CardTitle, CardContent, Button } from '@/components/ui'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminDrawsPage() {
   const result = await sql`
     SELECT * FROM draws
     ORDER BY year DESC, month DESC
   `
+  const draws = result.rows
 
   const currentMonth = new Date().getMonth() + 1
   const currentYear = new Date().getFullYear()
 
-  const currentDraw = result.find((d: any) => d.month === currentMonth && d.year === currentYear)
+  const currentDraw = draws.find((d: any) => d.month === currentMonth && d.year === currentYear)
 
   return (
     <div className="space-y-6">
@@ -68,7 +71,7 @@ export default async function AdminDrawsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {result.filter((d: any) => d.id !== currentDraw?.id).map((draw: any) => (
+              {draws.filter((d: any) => d.id !== currentDraw?.id).map((draw: any) => (
                 <div key={draw.id} className="flex items-center justify-between p-3 rounded-lg bg-muted">
                   <div>
                     <span className="font-medium">{draw.month}/{draw.year}</span>

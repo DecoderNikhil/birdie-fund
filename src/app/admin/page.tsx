@@ -1,6 +1,8 @@
 import { sql } from '@/lib/db/client'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminDashboardPage() {
   const [userCount, subCount, charityCount, pendingWinners] = await Promise.all([
     sql`SELECT count(*) as cnt FROM profiles`,
@@ -20,7 +22,7 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardContent className="p-6">
             <div className="text-3xl font-display font-bold text-primary">
-              {userCount[0]?.cnt || 0}
+              {userCount.rows[0]?.cnt || 0}
             </div>
             <p className="text-gray-400 mt-1">Total Users</p>
           </CardContent>
@@ -29,7 +31,7 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardContent className="p-6">
             <div className="text-3xl font-display font-bold text-primary">
-              {subCount[0]?.cnt || 0}
+              {subCount.rows[0]?.cnt || 0}
             </div>
             <p className="text-gray-400 mt-1">Active Subscribers</p>
           </CardContent>
@@ -38,7 +40,7 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardContent className="p-6">
             <div className="text-3xl font-display font-bold text-secondary">
-              {charityCount[0]?.cnt || 0}
+              {charityCount.rows[0]?.cnt || 0}
             </div>
             <p className="text-gray-400 mt-1">Active Charities</p>
           </CardContent>
@@ -47,7 +49,7 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardContent className="p-6">
             <div className="text-3xl font-display font-bold text-secondary">
-              {pendingWinners[0]?.cnt || 0}
+              {pendingWinners.rows[0]?.cnt || 0}
             </div>
             <p className="text-gray-400 mt-1">Pending Verifications</p>
           </CardContent>

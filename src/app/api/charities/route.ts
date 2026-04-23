@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
         WHERE ucs.user_id = ${decoded.userId}
       `
 
-      return NextResponse.json(result[0] || null)
+      return NextResponse.json(result.rows[0] || null)
     }
 
     const activeOnly = searchParams.get('active') !== 'false'
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
           ORDER BY is_featured DESC, name ASC
         `
 
-    return NextResponse.json(result)
+    return NextResponse.json(result.rows)
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       WHERE id = ${charityId} AND is_active = true
     `
 
-    if (charityResult.length === 0) {
+    if (charityResult.rows.length === 0) {
       return NextResponse.json({ error: 'Charity not found' }, { status: 404 })
     }
 
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
       WHERE ucs.user_id = ${decoded.userId}
     `
 
-    return NextResponse.json(selectionResult[0])
+    return NextResponse.json(selectionResult.rows[0])
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

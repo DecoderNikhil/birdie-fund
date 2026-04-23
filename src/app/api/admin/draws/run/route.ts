@@ -28,11 +28,11 @@ export async function POST(req: NextRequest) {
 
     const drawResult = await sql`SELECT * FROM draws WHERE id = ${drawId}`
     
-    if (drawResult.length === 0) {
+    if (drawResult.rows.length === 0) {
       return NextResponse.json({ error: 'Draw not found' }, { status: 404 })
     }
 
-    const draw = drawResult[0]
+    const draw = drawResult.rows[0]
 
     if (draw.status !== 'simulated') {
       return NextResponse.json({ error: 'Draw must be simulated before publishing' }, { status: 400 })
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     const subscriberResult = await sql`
       SELECT s.user_id FROM subscriptions s WHERE s.status = 'active'
     `
-    const subscriberCount = subscriberResult.length
+    const subscriberCount = subscriberResult.rows.length
 
     const scoresResult = await sql`
       SELECT user_id, array_agg(score ORDER BY score_date DESC) as scores
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
     const winners: any[] = []
 
-    for (const sub of scoresResult) {
+    for (const sub of scoresResult.rows) {
       const userScores = sub.scores.slice(0, 5)
       const matchCount = countMatches(userScores, draw.drawn_numbers)
       const isWinner = matchCount >= 3
@@ -76,12 +76,13 @@ export async function POST(req: NextRequest) {
         if (matchType === '5-match') {
           prizeAmount = poolAmount
         } else {
+          const matchCount = matchType === '4-match' ? 4 : 3
           const winnersInTier = await sql`
             SELECT count(*) as cnt FROM draw_entries de
             JOIN scores s ON de.user_id = s.user_id
-            WHERE de.draw_id = ${drawId} AND ${matchType === '4-match' ? sql`de.match_count = 4` : sql`de.match_count = 3`}
+            WHERE de.draw_id = ${drawId} AND de.match_count = ${matchCount}
           `
-          prizeAmount = calculatePrizePerWinner(poolAmount, winnersInTier[0]?.cnt || 1)
+          prizeAmount = calculatePrizePerWinner(poolAmount, winnersInTier.rows[0]?.cnt || 1)
         }
 
         await sql`
@@ -106,8 +107,8 @@ export async function POST(req: NextRequest) {
 
     for (const winner of winners) {
       const userResult = await sql`SELECT email, full_name FROM profiles WHERE id = ${winner.userId}`
-      if (userResult.length > 0) {
-        const u = userResult[0]
+      if (userResult.rows.length > 0) {
+        const u = userResult.rows[0]
         try {
           await sendEmail({
             to: u.email,

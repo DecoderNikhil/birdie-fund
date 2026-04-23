@@ -1,85 +1,35 @@
-const postgres = require('postgres')
+const { Pool } = require('pg')
 const bcrypt = require('bcryptjs')
-const fs = require('fs')
 
-// Read .env file directly
-function loadEnv() {
-  const envPath = '.env'
-  if (!fs.existsSync(envPath)) {
-    console.error('.env file not found')
-    process.exit(1)
-  }
-  
-  const envContent = fs.readFileSync(envPath, 'utf8')
-  envContent.split('\n').forEach(line => {
-    const trimmed = line.trim()
-    if (trimmed && !trimmed.startsWith('#')) {
-      const [key, ...valueParts] = trimmed.split('=')
-      if (key && valueParts.length) {
-        process.env[key.trim()] = valueParts.join('=').trim()
-      }
-    }
-  })
-}
-
-loadEnv()
-
-const DATABASE_URL = process.env.DATABASE_URL
-
-if (!DATABASE_URL) {
-  console.error('DATABASE_URL not found in .env')
-  process.exit(1)
-}
-
-const args = process.argv.slice(2)
-const email = args[0]
-const password = args[1] || 'admin123'
-
-if (!email) {
-  console.log('Usage: node create-admin.js <email> [password]')
-  console.log('Example: node create-admin.js admin@birdiefund.test')
-  process.exit(1)
-}
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+})
 
 async function createAdmin() {
-  const sql = postgres(DATABASE_URL, { max: 1 })
+  const passwordHash = await bcrypt.hash('Testing@123', 10)
   
-  const passwordHash = bcrypt.hashSync(password, 12)
+  await pool.query(
+    'INSERT INTO users (email, password_hash, full_name) VALUES ($1, $2, $3) ON CONFLICT (email) DO NOTHING',
+    ['admin@test.com', passwordHash, 'Admin User']
+  )
   
-  console.log(`Creating admin user: ${email}`)
+  const userResult = await pool.query('SELECT id FROM users WHERE email = $1', ['admin@test.com'])
   
-  try {
-    // Insert user
-    const userResult = await sql`
-      INSERT INTO users (email, password_hash, full_name)
-      VALUES (${email}, ${passwordHash}, 'Admin')
-      ON CONFLICT (email) DO UPDATE SET password_hash = ${passwordHash}
-      RETURNING id
-    `
+  if (userResult.rows.length > 0) {
+    const userId = userResult.rows[0].id
     
-    const userId = userResult[0]?.id
+    await pool.query(
+      'INSERT INTO profiles (id, email, full_name, role) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO UPDATE SET role = $4',
+      [userId, 'admin@test.com', 'Admin User', 'admin']
+    )
     
-    if (!userId) {
-      // Get existing user id
-      const existing = await sql`SELECT id FROM users WHERE email = ${email}`
-      userId = existing[0]?.id
-    }
-    
-    // Insert or update profile with admin role
-    await sql`
-      INSERT INTO profiles (id, email, full_name, role)
-      VALUES (${userId}, ${email}, 'Admin', 'admin')
-      ON CONFLICT (id) DO UPDATE SET role = 'admin'
-    `
-    
-    console.log(`✓ Admin created: ${email}`)
-    console.log(`  Password: ${password}`)
-    
-  } catch (error) {
-    console.error('Error:', error.message)
+    console.log('Admin created!')
+    console.log('Email: admin@test.com')
+    console.log('Password: Testing@123')
   }
   
-  await sql.end()
+  await pool.end()
 }
 
 createAdmin()

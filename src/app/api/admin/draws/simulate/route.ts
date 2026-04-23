@@ -29,11 +29,11 @@ export async function POST(req: NextRequest) {
       SELECT * FROM draws WHERE id = ${drawId}
     `
 
-    if (drawResult.length === 0) {
+    if (drawResult.rows.length === 0) {
       return NextResponse.json({ error: 'Draw not found' }, { status: 404 })
     }
 
-    const draw = drawResult[0]
+    const draw = drawResult.rows[0]
 
     if (draw.status !== 'pending') {
       return NextResponse.json({ error: 'Draw already simulated or published' }, { status: 400 })
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const subscriberResult = await sql`
       SELECT s.user_id FROM subscriptions s WHERE s.status = 'active'
     `
-    const subscriberCount = subscriberResult.length
+    const subscriberCount = subscriberResult.rows.length
 
     const scoresResult = await sql`
       SELECT user_id, array_agg(score ORDER BY score_date DESC) as scores
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     let match4Count = 0
     let match3Count = 0
 
-    for (const sub of scoresResult) {
+    for (const sub of scoresResult.rows) {
       const userScores = sub.scores.slice(0, 5)
       const matchCount = countMatches(userScores, drawnNumbers)
 

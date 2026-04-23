@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       WHERE user_id = ${decoded.userId} AND score_date = ${scoreDate}
     `
 
-    if (existing.length > 0) {
+    if (existing.rows.length > 0) {
       return NextResponse.json({ error: 'A score for this date already exists' }, { status: 409 })
     }
 
@@ -93,7 +93,7 @@ export async function PATCH(req: NextRequest) {
       WHERE id = ${scoreId} AND user_id = ${decoded.userId}
     `
 
-    if (existing.length === 0) {
+    if (existing.rows.length === 0) {
       return NextResponse.json({ error: 'Score not found' }, { status: 404 })
     }
 
@@ -103,7 +103,7 @@ export async function PATCH(req: NextRequest) {
         WHERE user_id = ${decoded.userId} AND score_date = ${scoreDate} AND id != ${scoreId}
       `
 
-      if (duplicate.length > 0) {
+      if (duplicate.rows.length > 0) {
         return NextResponse.json({ error: 'A score for this date already exists' }, { status: 409 })
       }
     }
@@ -150,7 +150,7 @@ export async function DELETE(req: NextRequest) {
       WHERE id = ${scoreId} AND user_id = ${decoded.userId}
     `
 
-    if (existing.length === 0) {
+    if (existing.rows.length === 0) {
       return NextResponse.json({ error: 'Score not found' }, { status: 404 })
     }
 

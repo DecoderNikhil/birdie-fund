@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const subResult = await sql`
       SELECT stripe_customer_id FROM subscriptions WHERE user_id = ${decodeURIComponent(decoded.userId)}
     `
-    let customerId = subResult[0]?.stripe_customer_id
+    let customerId = subResult.rows[0]?.stripe_customer_id
 
     if (!customerId) {
       const customer = await createCustomer(user.email, decoded.userId)

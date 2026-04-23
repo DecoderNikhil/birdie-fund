@@ -48,7 +48,7 @@ export async function createUser(email: string, password: string, fullName?: str
     RETURNING id, email, password_hash, full_name, created_at
   `
   
-  const user = result[0] as any
+  const user = result.rows[0] as any
   
   await sql`
     INSERT INTO profiles (id, email, full_name, role)
@@ -73,9 +73,9 @@ export async function authenticateUser(email: string, password: string): Promise
     WHERE u.email = ${email}
   `
   
-  if (result.length === 0) return null
+  if (result.rows.length === 0) return null
   
-  const user = result[0] as any
+  const user = result.rows[0] as any
   const valid = await verifyPassword(password, user.password_hash)
   
   if (!valid) return null
@@ -98,9 +98,9 @@ export async function getUserById(userId: string) {
     WHERE u.id = ${userId}
   `
   
-  if (result.length === 0) return null
+  if (result.rows.length === 0) return null
   
-  return result[0] as {
+  return result.rows[0] as {
     id: string
     email: string
     full_name: string | null

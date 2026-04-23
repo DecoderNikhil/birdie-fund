@@ -1,13 +1,16 @@
 import { sql } from '@/lib/db/client'
 import { Badge } from '@/components/ui'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminUsersPage() {
-  const users = await sql`
+  const usersResult = await sql`
     SELECT p.id, p.email, p.full_name, p.role, p.created_at, s.status as sub_status
     FROM profiles p
     LEFT JOIN subscriptions s ON p.id = s.user_id
     ORDER BY p.created_at DESC
   `
+  const users = usersResult.rows
 
   return (
     <div className="space-y-6">
